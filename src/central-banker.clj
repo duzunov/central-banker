@@ -117,16 +117,7 @@
   (set-policy)
   )
 
-;; TODO non-negative inflation, non-negative unemployment
-(defn model-naive [econ i]
-  (-> econ
-      (update :p + (:p* econ))
-      (update :u + (:u* econ))
-      (update :p* - i)
-      (update :u* + i)))
-
-#_ ((fn [o & rest] (let [res (apply + o rest)] (if (neg? res) 0 res))) 0 12)
-
+;; Note that this model doesn't allow for deflation which is pretty rare anyway
 (defn model [econ i]
   (letfn [(add-abs [o & rest]
             (let [res (apply + o rest)]

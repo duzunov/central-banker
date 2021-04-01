@@ -79,15 +79,6 @@
 (defn- rand-event
   "Returns a random event weighted by :probability"
   [events]
-  (->> events
-       (map :probability)
-       vec
-       wrand
-       events))
-
-(defn- rand-event
-  "Returns a random event weighted by :probability"
-  [events]
   (->> (map :probability events)
        vec
        wrand
@@ -106,10 +97,16 @@
     (println (:description r)) ;; Should I use tap> instead of this?
     ((:function r) econ)))
 
-;; TODO validate int
-;; slurp instead of .readLine in order to avoid reflexion
-(defn set-policy []
-  (Integer/parseInt (slurp *in*)))
+;; update with weighted probability
+(defn event-update
+  "Weighted random event function applied to the economy, unpure print for debugging"
+  [econ]
+  (let [r (rand-event events)]
+    ((comp
+      (:function r)
+      (event-effect :last-event
+                    (fn [_] (:description r))))
+     econ)))
 
 (defn set-policy []
   (Integer/parseInt (read-line)))
@@ -142,7 +139,7 @@
 ;; scoring for example
 ;; change this to accept a sequence of econ maps
 (defn game-over [econ]
-  "See game is won or lost"
+  "See if the game is won or lost"
   (cond
     (< (:p econ) 5) "win!"
     (> (:p econ) 5) "lose!"
@@ -153,9 +150,11 @@
   (def example-econ (atom start-econ))
   (swap! example-econ pass-quarter 0)
   (reset! example-econ start-econ)
-  (use 'clojure.pprint)
-  ;; show a progression
-  (print-table (take 10 (repeatedly #(swap! example-econ pass-quarter 0))))
+  ;; show 16 quarters in a table
+  (do
+    (use 'clojure.pprint)
+    (reset! example-econ start-econ)
+    (print-table (take 16 (repeatedly #(swap! example-econ pass-quarter 0)))))
   ,)
 
 
@@ -166,7 +165,8 @@
   []
   (loop [econ start-econ]
     (let [current-quarter (:quarter econ)]
-      (println "The inflation rate in quarter " current-quarter ": " (:p econ) " enter your target i:")
+      (println "The inflation rate in quarter " current-quarter ": " (:p econ)
+               " enter your target i:")
       (if (< current-quarter 3)
         (recur (pass-quarter econ (set-policy)))
         (game-over econ)))))

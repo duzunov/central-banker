@@ -9,6 +9,7 @@
    :p 5, :p* 0
    :u 5, :u* 0
    :quarter 0
+   :last-event "Business as usual"
    })
 
 ;; the model should be a function that does the normal actions each quarter

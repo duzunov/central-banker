@@ -32,14 +32,14 @@
     },
    {
     :description "Stock market crash"
-    :function (comp (event-effect :p - 4)
-                    (event-effect :u + 10))
+    :function (comp (event-effect :p* - 4)
+                    (event-effect :u* + 10))
     :probability 0.05
     },
    {
     :description "Real-estate boom"
-    :function (comp (event-effect :p + 3)
-                    (event-effect :u - 1))
+    :function (comp (event-effect :p* + 3)
+                    (event-effect :u* - 1))
     :probability 0.05
     },
    {
@@ -85,8 +85,9 @@
        events))
 
 (comment
-  (use 'clojure.pprint)
-  (print-table (take 10 (repeatedly (fn [] (rand-event events)))))
+  (do
+    (use 'clojure.pprint)
+    (print-table (take 10 (repeatedly (fn [] (rand-event events))))))
   ,)
 
 ;; update with weighted probability
@@ -111,10 +112,6 @@
 (defn set-policy []
   (Integer/parseInt (read-line)))
 
-(comment
-  (set-policy)
-  )
-
 ;; Note that this model doesn't allow for deflation which is pretty rare anyway
 (defn model [econ i]
   (letfn [(add-abs [o & rest]
@@ -138,12 +135,15 @@
 ;; TODO add unemployment
 ;; scoring for example
 ;; change this to accept a sequence of econ maps
-(defn game-over [econ]
+
+(defn game-over [history]
   "See if the game is won or lost"
-  (cond
-    (< (:p econ) 5) "win!"
-    (> (:p econ) 5) "lose!"
-    :else "idk"))
+  (let [final (last history)]
+    (cond
+      (< (:p final) 5) "win!"
+      (> (:p final) 5) "lose!"
+      :else "idk")))
+
 
 (comment
   ;; test a passing quarter
@@ -158,27 +158,15 @@
   ,)
 
 
-;; include a [] of all econs in order to calculate scores
+
 (defn game
   "The game function waits for a policy (interest rate - i)
   to be applied in response to the state of the economy"
   []
-  (loop [econ start-econ]
+  (loop [econ start-econ, history []]
     (let [current-quarter (:quarter econ)]
       (println "The inflation rate in quarter " current-quarter ": " (:p econ)
                " enter your target i:")
       (if (< current-quarter 3)
-        (recur (pass-quarter econ (set-policy)))
-        (game-over econ)))))
-
-(comment
-  (set-policy)
-  (update start-econ :p +)
-  (game)
-  *print-readably*
-  *print-level*
-  
-  ;; https://eml.berkeley.edu/~dromer/papers/ISMP%20Text%20Graphs%202013.pdf
-  ;; https://global.oup.com/uk/orc/busecon/economics/carlin_soskice/student/excelsimulator/
-  ;;; https://voxeu.org/sites/default/files/file/DP7979.pdf
-  )
+        (recur (pass-quarter econ (set-policy)) , (conj history econ))
+        (game-over history)))))

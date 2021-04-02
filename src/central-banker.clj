@@ -95,7 +95,8 @@
   "Weighted random event function applied to the economy, unpure print for debugging"
   [econ]
   (let [r (rand-event events)]
-    (println (:description r)) ;; Should I use tap> instead of this?
+    (println (:description r))
+    ;; Should I use tap> instead of this?
     ((:function r) econ)))
 
 ;; update with weighted probability
@@ -129,20 +130,24 @@
   (-> econ
       event-update
       (model i)
+      (update :i (fn [_ a] a) i)
       (update :quarter inc)
       ))
 
-;; TODO add unemployment
-;; scoring for example
-;; change this to accept a sequence of econ maps
+;; a variation of the Misery index by Arthur Okun
+;; is used to calculate if you win the game
 
 (defn game-over [history]
   "See if the game is won or lost"
-  (let [final (last history)]
-    (cond
-      (< (:p final) 5) "win!"
-      (> (:p final) 5) "lose!"
-      :else "idk")))
+  (let [p (map :p history)
+        u (map :u history)
+        avg (fn [coll] (/ (apply + 0.0 coll)
+                          (count coll)))
+        misery (+ (avg p)
+                  (avg u))]
+    (if  (<= misery 10.0)
+      "You won the game!"
+      "Game over, you lost!")))
 
 
 (comment
@@ -155,6 +160,7 @@
     (use 'clojure.pprint)
     (reset! example-econ start-econ)
     (print-table (take 16 (repeatedly #(swap! example-econ pass-quarter 0)))))
+  
   ,)
 
 
@@ -165,8 +171,12 @@
   []
   (loop [econ start-econ, history []]
     (let [current-quarter (:quarter econ)]
-      (println "The inflation rate in quarter " current-quarter ": " (:p econ)
-               " enter your target i:")
+      (println
+       "i:" (:i econ)
+       "Current quarter: " current-quarter
+       " Inflation: " (:p econ)
+       " Unemployment: " (:u econ)
+       " enter your target i:")
       (if (< current-quarter 3)
         (recur (pass-quarter econ (set-policy)) , (conj history econ))
         (game-over history)))))

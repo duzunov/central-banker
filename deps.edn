@@ -1,4 +1,6 @@
 {:paths ["src"]
  :aliases
  {:main
-  {:exec-fn centralbanker.main/-main}}}
+  {:exec-fn centralbanker.main/-main}
+  :testin
+  {:exec-fn centralbanker.main/set-policy-test}}}

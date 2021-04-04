@@ -1,7 +1,9 @@
 (ns centralbanker.main
   (:require [clojure.pprint]))
 
-(set! *warn-on-reflection* true) ;; avoid reflexion so you can use graalvm
+;; enable this toavoid reflexion so you can use graalvm
+(set! *warn-on-reflection* false) 
+
 
 ;; for testing
 (def start-econ
@@ -90,6 +92,7 @@
 
 ;; recur arg for primitive local: sum is not matching primitive, had: Object, needed: long
 ;; Auto-boxing loop arg: sum
+;; TODO: do I need to coerce sum to long somehow? Or do a type hint?
 
 (defn- rand-event
   "Returns a random event weighted by :probability"
@@ -119,24 +122,24 @@
 (defn set-policy []
   (Integer/parseInt (read-line)))
 
+
 (defn model [econ r]
   (letfn [(add-abs [o & rest]
             (let [res (apply + o rest)]
               (if (neg? res) 0 res)))
           (is [r]
-            "returns the y₁; variant of the investment-saving curve from IS-LM"
-            (add-abs - 100 (* 0.25 r)))
+            ;; "returns the y₁; variant of the investment-saving curve from IS-LM"
+            (add-abs 100 (* -0.25 r)))
           (pc [pi r ye]
-            "returns the π₁, Phillips Curve variant"
+            ;; "returns the π₁, Phillips Curve variant"
             (+ pi 5 (* 4 (- (is r) ye))))
           (jobsearch [u pi]
             (add-abs u (* -0.5 pi)))]
     (let [{:keys [ye y pi]} econ]
       (-> econ
           (assoc :y (is r))
-          (update :pi pc r ye) ;; uses ye
+          (update :pi pc r ye) 
           (update :u jobsearch pi)
-          ;; add something for unemployment
           ,))))
 
 (defn pass-quarter
@@ -191,8 +194,8 @@
     (game-report! history)
     (println "Misery Index: " misery)
     (if  (<= misery 10.0)
-      "You won the game!"
-      "Game over, you lost!")))
+      (println "You won the game!")
+      (println "Game over, you lost!"))))
 
 ;; TODO: Separate presentation function
 (defn game

@@ -186,21 +186,24 @@
   ,)
 
 
-;; TODO:  use destructuring in let
 ;; TODO: Separate presentation function
 (defn game
   "The game function waits for a policy (interest rate - i)
   to be applied in response to the state of the economy"
   [length]
   (loop [econ start-econ, history []]
-    (let [current-quarter (:quarter econ)]
+    (let [{:keys [r quarter last-event pi u]} econ]
       (println
-       "r:" (:r econ)
-       "Current quarter: " current-quarter
-       (:last-event econ) "\n"
-       " Inflation: " (:pi econ)
-       " Unemployment: " (:u econ)
+       "r:" r
+       "Current quarter: " quarter
+       last-event "\n"
+       " Inflation: " pi
+       " Unemployment: " u
        " enter your target r:")
-      (if (< current-quarter length)
+      (if (< quarter length)
         (recur (pass-quarter econ (set-policy)) , (conj history econ))
         (game-over history)))))
+
+
+(defn main []
+  (game 16))

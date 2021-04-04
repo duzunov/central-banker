@@ -1,1 +1,4 @@
-{:paths ["src"]}
+{:paths ["src"]
+ :aliases
+ {:main
+  {:exec-fn centralbanker.main/-main}}}

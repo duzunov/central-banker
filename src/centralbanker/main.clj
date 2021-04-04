@@ -1,4 +1,5 @@
-(ns central-banker.main)
+(ns centralbanker.main
+  (:require [clojure.pprint]))
 
 (set! *warn-on-reflection* true) ;; avoid reflexion so you can use graalvm
 
@@ -125,7 +126,7 @@
           (is [r]
             "returns the y₁; variant of the investment-saving curve from IS-LM"
             (add-abs - 100 (* 0.25 r)))
-          (pc [pi r]
+          (pc [pi r ye]
             "returns the π₁, Phillips Curve variant"
             (+ pi 5 (* 4 (- (is r) ye))))
           (jobsearch [u pi]
@@ -133,7 +134,7 @@
     (let [{:keys [ye y pi]} econ]
       (-> econ
           (assoc :y (is r))
-          (update :pi pc r) ;; uses ye
+          (update :pi pc r ye) ;; uses ye
           (update :u jobsearch pi)
           ;; add something for unemployment
           ,))))
@@ -205,5 +206,5 @@
       (game-over history))))
 
 
-(defn main []
+(defn -main [& opts]
   (game 16))

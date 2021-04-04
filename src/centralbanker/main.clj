@@ -165,15 +165,14 @@
   ,)
 
 
-(defn print-report-n-prompt! [econ]
-  (let [{:keys [r quarter last-event pi u]} econ]
-    (println
-     "r:" r
-     "Current quarter: " quarter
-     last-event "\n"
-     " Inflation: " pi
-     " Unemployment: " u
-     " enter your target r:")))
+(defn print-report-n-prompt! [{:keys [r quarter last-event pi u]}]
+  (println
+   "r:" r
+   "Current quarter: " quarter
+   last-event "\n"
+   " Inflation: " pi
+   " Unemployment: " u
+   " enter your target r:"))
 
 (defn game-report! [history]
   (do

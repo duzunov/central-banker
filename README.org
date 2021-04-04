@@ -1,0 +1,21 @@
+#+title:  Central Banker
+#+author: Dimitar Uzunov
+#+date:   2020-10-27
+
+* Description 
+  This is a small game to practice clojure. Don't expect too much out of it.
+  It is inspired by Chair the Fed by the Federal Reserve of San Francisco (https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjSufvlnuXvAhVEr6QKHbdlCwIQFjAAegQIAxAD&url=https%3A%2F%2Fwww.sffed-education.org%2Fchairthefed%2F&usg=AOvVaw1pQvFNu1aSihOchRqO1u6k). 
+
+  Feedback is welcome!
+
+* Running the game
+  Install clojure tools https://clojure.org/guides/getting_started
+  Run with clj -M -m centralbanker.main
+ 
+
+* TODOs
+** TODO Make a nice web interface with Biff https://findka.com/biff/
+** TODO Use graalvm to make native executables
+** TODO Store hi-scores in a DB like Crux https://opencrux.com/main/index.html
+
+   

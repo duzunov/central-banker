@@ -99,13 +99,12 @@
        events))
 
 (comment
-  "Test the randomness of events"
+  "Test the distribution of events"
   (do
     (use 'clojure.pprint)
     (print-table (take 16 (repeatedly (fn [] (rand-event events))))))
   ,)
 
-;; update with weighted probability
 (defn event-update
   "Weighted random event function applied to the economy, unpure print for debugging"
   [econ]
@@ -148,6 +147,29 @@
       (assoc :r r)
       (update :quarter inc)))
 
+(comment
+  ;; test a passing quarter
+  (def example-econ (atom start-econ))
+  (swap! example-econ pass-quarter 0)
+  (reset! example-econ start-econ)
+  ;; show 16 quarters saved in a var called hist in a table
+  (do
+    (reset! example-econ start-econ)
+    (def hist
+      (vec (take 16 (repeatedly #(swap! example-econ pass-quarter 5)))))
+    (clojure.pprint/print-table hist))
+  ,)
+
+
+(defn print-report-n-prompt! [econ]
+  (let [{:keys [r quarter last-event pi u]} econ]
+    (println
+     "r:" r
+     "Current quarter: " quarter
+     last-event "\n"
+     " Inflation: " pi
+     " Unemployment: " u
+     " enter your target r:")))
 
 (defn game-report! [history]
   (do
@@ -171,38 +193,16 @@
       "You won the game!"
       "Game over, you lost!")))
 
-
-(comment
-  ;; test a passing quarter
-  (def example-econ (atom start-econ))
-  (swap! example-econ pass-quarter 0)
-  (reset! example-econ start-econ)
-  ;; show 16 quarters saved in a var called hist in a table
-  (do
-    (reset! example-econ start-econ)
-    (def hist
-      (vec (take 16 (repeatedly #(swap! example-econ pass-quarter 5)))))
-    (clojure.pprint/print-table hist))
-  ,)
-
-
 ;; TODO: Separate presentation function
 (defn game
   "The game function waits for a policy (interest rate - i)
   to be applied in response to the state of the economy"
   [length]
   (loop [econ start-econ, history []]
-    (let [{:keys [r quarter last-event pi u]} econ]
-      (println
-       "r:" r
-       "Current quarter: " quarter
-       last-event "\n"
-       " Inflation: " pi
-       " Unemployment: " u
-       " enter your target r:")
-      (if (< quarter length)
-        (recur (pass-quarter econ (set-policy)) , (conj history econ))
-        (game-over history)))))
+    (print-report-n-prompt! econ)
+    (if (< (:quarter econ) length)
+      (recur (pass-quarter econ (set-policy)) , (conj history econ))
+      (game-over history))))
 
 
 (defn main []

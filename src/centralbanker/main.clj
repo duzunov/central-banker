@@ -1,7 +1,7 @@
 (ns centralbanker.main
   (:require [clojure.pprint]))
 
-;; enable this toavoid reflexion so you can use graalvm
+;; enable this to avoid reflexion so you can use graalvm
 (set! *warn-on-reflection* false) 
 
 
@@ -15,9 +15,6 @@
    :quarter 0
    :last-event "Business as usual"
    })
-
-;; the model should be a function that does the normal actions each quarter
-;;
 
 (defn- event-effect [& rest]
     (fn [econ]
@@ -109,8 +106,8 @@
     (print-table (take 16 (repeatedly (fn [] (rand-event events))))))
   ,)
 
-(defn event-update
-  "Weighted random event function applied to the economy, unpure print for debugging"
+(defn- event-update
+  "Weighted random event function applied to the economy"
   [econ]
   (let [r (rand-event events)
         {:keys [description function]} r]

@@ -112,12 +112,9 @@
 (defn event-update
   "Weighted random event function applied to the economy, unpure print for debugging"
   [econ]
-  (let [r (rand-event events)]
-    ((comp
-      (:function r)
-      (event-effect :last-event
-                    (fn [_] (:description r))))
-     econ)))
+  (let [r (rand-event events)
+        {:keys [description function]} r]
+    ((comp function #(assoc % :last-event description)) econ)))
 
 (defn set-policy []
   (Integer/parseInt (read-line)))

@@ -1,6 +1,17 @@
 {:paths ["src"]
  :aliases
- {:main
-  {:exec-fn centralbanker.main/-main}
-  :testin
-  {:exec-fn centralbanker.main/set-policy-test}}}
+ {:main {:exec-fn centralbanker.main/-main}
+  :testin {:exec-fn centralbanker.main/set-policy-test}
+    ;; build an uberjar (application) with AOT compilation by default:
+  :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.211"}}
+            :exec-fn hf.depstar/uberjar
+            :exec-args {:aot true}}
+  ;; build a jar (library):
+  :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.211"}}
+        :exec-fn hf.depstar/jar
+        :exec-args {}}
+  ;; generic depstar alias, use with jar or uberjar function name:
+  :depstar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.211"}}
+            :ns-default hf.depstar
+            :exec-args {}}
+}}

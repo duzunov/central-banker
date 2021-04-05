@@ -1,5 +1,6 @@
 (ns centralbanker.main
-  (:require [clojure.pprint]))
+  (:require [clojure.pprint])
+  (:gen-class))
 
 ;; enable this to avoid reflexion so you can use graalvm
 (set! *warn-on-reflection* false) 

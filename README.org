@@ -11,13 +11,22 @@
 * Running the game
   Install the [[ https://clojure.org/guides/getting_started][clojure tools]]
   Run with $ clj -M -m centralbanker.main or $ clj -X:main
- 
+
+  Build to a jar with: clj -X:uberjar :aot true :jar centralbanker.jar :main-class centralbanker.main
+  and then run with java -jar centralbanker.jar
+
+  You can also use the GraalVM native-image tool:
+  /Library/Java/JavaVirtualMachines/graalvm-ce-java11-21.0.0.2/Contents/Home/bin/native-image --report-unsupported-elements-at-runtime \
+             --initialize-at-build-time \
+             --no-server \
+             -jar centralbanker.jar \
+	     -H:Name=cb
 
 * TODOs
 
 ** TODO fix the economic model
 ** TODO Make a nice web interface with [[https://findka.com/biff/][Biff]] 
-** TODO Use graalvm to make native executables
+** DONE Use graalvm to make native executables
 ** TODO Store hi-scores in a DB like [[ https://opencrux.com/main/index.html][Crux]]
 
    
